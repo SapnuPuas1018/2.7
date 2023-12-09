@@ -6,6 +6,7 @@ socket server
 import socket
 import logging
 import glob
+import os
 
 logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
 
@@ -16,24 +17,26 @@ MAX_PACKET = 4
 SHORT_SIZE = 2
 SERVER_NAME = 'best server ever'
 
-
-def DIR_request(request):
-    try:
-        x = input("enter ")
-        return glob.glob(r'{}\*.*'.format(x))
-    except:
-        logging.debug('file not found')
-
-
-def return_answer(request):
+def return_answer(request,client_socket):
     """
-    :param request:
-    :type request: str
+    :param: request
+    :type: request str
     :return: dt_string | SERVER_NAME | random_number
     :rtype: str | int
     """
     if request == 'DIR':
-        return DIR_request(request)
+        try:
+            file_name = client_socket.recv(MAX_PACKET).decode()
+            return glob.glob(r'{}\*.*'.format(file_name))
+        except:
+            logging.debug('file not found')
+    elif request == 'DELETE':
+        try:
+            file_name = client_socket.recv(MAX_PACKET).decode()
+            logging.debug('file name del: ' + file_name)
+            return os.remove(r'{}\*.*'.format(file_name))
+        except:
+            logging.debug('file not found')
     elif request == 'EXIT':
         return 'exit'
 
@@ -63,7 +66,7 @@ def main():
                 while response != 'exit':
                     request = client_socket.recv(MAX_PACKET).decode()
                     logging.debug('server received: ' + request)
-                    response = return_answer(request)
+                    response = return_answer(request, client_socket)
                     protocol(response, client_socket)
             except socket.error as err:
                 logging.debug('received socket error on client socket' + str(err))

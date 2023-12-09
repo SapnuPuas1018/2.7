@@ -3,6 +3,7 @@ author - Yuval Hayun
 date   - 23/11/23
 socket client
 """
+import os
 import socket
 import logging
 
@@ -41,8 +42,13 @@ def main():
         request = ""
         while request != "EXIT":
             request = input('enter your request here: ')
+            my_socket.send(request.encode())
+            protocol(my_socket)
             if request == 'DIR':
-                file_name = input('enter the file name: DIR ')
+                file_name = input('enter the file name (DIR): ')
+                my_socket.send(file_name.encode())
+            elif request == 'DELETE':
+                file_name = input('enter the file name that you want to delete: ')
                 my_socket.send(file_name.encode())
             elif request == 'EXIT':
                 my_socket.send(request.encode())
