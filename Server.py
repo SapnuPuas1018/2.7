@@ -11,13 +11,14 @@ import os
 logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
 
 IP = '0.0.0.0'
-PORT = 16240
+PORT = 16241
 QUEUE_LEN = 1
 MAX_PACKET = 4
 SHORT_SIZE = 2
 SERVER_NAME = 'best server ever'
 
-def return_answer(request,client_socket):
+
+def return_answer(request, client_socket):
     """
     :param: request
     :type: request str
@@ -27,14 +28,16 @@ def return_answer(request,client_socket):
     if request == 'DIR':
         try:
             file_name = client_socket.recv(MAX_PACKET).decode()
-            return glob.glob(r'{}\*.*'.format(file_name))
+            boolbool = glob.glob(rf'{file_name}\*.*')
+            print(boolbool)
+            return boolbool
         except:
             logging.debug('file not found')
     elif request == 'DELETE':
         try:
             file_name = client_socket.recv(MAX_PACKET).decode()
             logging.debug('file name del: ' + file_name)
-            return os.remove(r'{}\*.*'.format(file_name))
+            return os.remove(rf'{file_name}\*.*')
         except:
             logging.debug('file not found')
     elif request == 'EXIT':
@@ -68,6 +71,7 @@ def main():
                     logging.debug('server received: ' + request)
                     response = return_answer(request, client_socket)
                     protocol(response, client_socket)
+                    print(response)
             except socket.error as err:
                 logging.debug('received socket error on client socket' + str(err))
             finally:

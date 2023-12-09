@@ -10,7 +10,7 @@ import logging
 logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
 
 SERVER_IP = '127.0.0.1'
-SERVER_PORT = 16240
+SERVER_PORT = 16241
 HEADER_LEN = 2
 MAX_PACKET = 1024
 
@@ -43,7 +43,6 @@ def main():
         while request != "EXIT":
             request = input('enter your request here: ')
             my_socket.send(request.encode())
-            protocol(my_socket)
             if request == 'DIR':
                 file_name = input('enter the file name (DIR): ')
                 my_socket.send(file_name.encode())
