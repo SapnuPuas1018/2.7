@@ -29,9 +29,9 @@ def return_answer(request, client_socket):
         try:
             file_name = client_socket.recv(MAX_PACKET).decode()
             print(file_name)
-            boolbool = glob.glob(rf'{file_name}\*.*')
-            print(boolbool)
-            return boolbool
+            x = glob.glob(rf'{file_name}\*.*')
+            print(x)
+            return x
         except:
             logging.debug('file not found')
     elif request == 'DELETE':
