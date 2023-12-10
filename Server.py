@@ -28,6 +28,7 @@ def return_answer(request, client_socket):
     if request == 'DIR':
         try:
             file_name = client_socket.recv(MAX_PACKET).decode()
+            print(file_name)
             boolbool = glob.glob(rf'{file_name}\*.*')
             print(boolbool)
             return boolbool
