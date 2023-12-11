@@ -6,6 +6,7 @@ socket client
 import os
 import socket
 import logging
+import Protocol
 
 logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
 
@@ -13,26 +14,7 @@ SERVER_IP = '127.0.0.1'
 SERVER_PORT = 16241
 HEADER_LEN = 2
 MAX_PACKET = 1024
-COMMAND_LIST = ['DIR', 'DELETE', 'COPY', 'EXECUTE', 'TAKE_SCREENSHOT', 'EXIT']
-
-
-def protocol(my_socket):
-    """
-    :param my_socket:
-    :return:
-    """
-    response = ''
-    message_len = ''
-    while response != '!':
-        message_len += response
-        response = my_socket.recv(1).decode()
-    response = ''
-    rounds_num = int(int(message_len) / MAX_PACKET)
-    if int(int(message_len) % MAX_PACKET) != 0:
-        rounds_num += 1
-    for i in range(rounds_num):
-        response += my_socket.recv(MAX_PACKET).decode()
-    print(response)
+COMMAND_SINGLE_PARAMETER_LIST = ['DIR', 'DELETE', 'EXECUTE']
 
 
 def main():
@@ -40,23 +22,40 @@ def main():
     try:
         my_socket.connect(('127.0.0.1', SERVER_PORT))
         logging.debug('connected')
-        request = ''
+        request = ['', ]
         while request != 'EXIT':
             request = input('enter your request here: ')
-            my_socket.send(request.encode())
-            if request == 'DIR':
-                folder_name = input('enter the folder path (DIR): ')
-                my_socket.sendall(folder_name.encode())
-                response = my_socket.recv(MAX_PACKET).decode()
+            print(request)
+            Protocol.send(my_socket, request)
+            if request in COMMAND_SINGLE_PARAMETER_LIST:
+                folder_name = input(f'enter the file path ({request}): ')
+                Protocol.send(my_socket, folder_name)
+                response = Protocol.receive(my_socket)
                 print(response)
-            elif request == 'DELETE':
-                file_name = input('enter the file path that you want to delete:')
-                my_socket.send(file_name.encode())
-                response = my_socket.recv(MAX_PACKET)
-                print(response.decode())
+
+            # if request == 'DIR':
+            #     folder_name = input('enter the folder path (DIR): ')
+            #     Protocol.send(my_socket, folder_name)
+            #     response = Protocol.receive(my_socket)
+            #     print(response)
+            # elif request == 'DELETE':
+            #     file_name = input('enter the file path that you want to delete:')
+            #     Protocol.send(my_socket, file_name)
+            #     response = Protocol.receive(my_socket)
+            #     print(response.decode())
+
+            elif request == 'COPY':
+                source = input('enter the file path that you want to copy: ')
+                Protocol.send(my_socket, source)
+                destination = input('enter the destination: ')
+                Protocol.send(my_socket, destination)
+            # elif request == 'EXECUTE':
+            #     file_name = input('enter the file path that you want to execute:')
+            #     Protocol.send(my_socket, file_name)
+            #     response = Protocol.receive(my_socket)
+            #     print(response)
             elif request == 'EXIT':
                 my_socket.send(request.encode())
-                protocol(my_socket)
             else:
                 print('invalid')
                 logging.debug('client entered an invalid request')
