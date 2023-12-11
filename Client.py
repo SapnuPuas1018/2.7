@@ -26,11 +26,11 @@ def main():
         while request != 'EXIT':
             request = input('enter your request here: ')
             print(request)
-            Protocol.send(my_socket, request)
+            Protocol.send_(my_socket, request)
             if request in COMMAND_SINGLE_PARAMETER_LIST:
                 folder_name = input(f'enter the file path ({request}): ')
-                Protocol.send(my_socket, folder_name)
-                response = Protocol.receive(my_socket)
+                Protocol.send_(my_socket, folder_name)
+                response = Protocol.receive_(my_socket)
                 print(response)
 
             # if request == 'DIR':
@@ -46,16 +46,16 @@ def main():
 
             elif request == 'COPY':
                 source = input('enter the file path that you want to copy: ')
-                Protocol.send(my_socket, source)
+                Protocol.send_(my_socket, source)
                 destination = input('enter the destination: ')
-                Protocol.send(my_socket, destination)
+                Protocol.send_(my_socket, destination)
             # elif request == 'EXECUTE':
             #     file_name = input('enter the file path that you want to execute:')
             #     Protocol.send(my_socket, file_name)
             #     response = Protocol.receive(my_socket)
             #     print(response)
             elif request == 'EXIT':
-                my_socket.send(request.encode())
+                my_socket.send_(request.encode())
             else:
                 print('invalid')
                 logging.debug('client entered an invalid request')
