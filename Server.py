@@ -7,15 +7,15 @@ import socket
 import logging
 import glob
 import os
+import shutil
 
 logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
 
-IP = '0.0.0.0'
+IP = '127.0.0.1'
 PORT = 16241
 QUEUE_LEN = 1
-MAX_PACKET = 4
+MAX_PACKET = 1024
 SHORT_SIZE = 2
-SERVER_NAME = 'best server ever'
 
 
 def return_answer(request, client_socket):
@@ -27,18 +27,23 @@ def return_answer(request, client_socket):
     """
     if request == 'DIR':
         try:
-            file_name = client_socket.recv(MAX_PACKET).decode()
-            print(file_name)
-            x = glob.glob(rf'{file_name}\*.*')
+            folder_name_bytes = client_socket.recv(MAX_PACKET).decode()
+            print(folder_name_bytes)
+            x = glob.glob(rf'{folder_name_bytes}\*.*')
             print(x)
+            output = f"{x}"
+            client_socket.send(output.encode())
             return x
         except:
-            logging.debug('file not found')
+            logging.debug('folder not found')
     elif request == 'DELETE':
         try:
             file_name = client_socket.recv(MAX_PACKET).decode()
             logging.debug('file name del: ' + file_name)
-            return os.remove(rf'{file_name}\*.*')
+            os.remove(file_name)
+            print(f"{file_name} has been removed successfully")
+            logging.debug("File deleted successfully.")
+            client_socket.send(b"File deleted successfully.")
         except:
             logging.debug('file not found')
     elif request == 'EXIT':
@@ -60,7 +65,7 @@ def protocol(response, client_socket):
 def main():
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        my_socket.bind(('0.0.0.0', PORT))
+        my_socket.bind(('127.0.0.1', PORT))
         my_socket.listen(QUEUE_LEN)
         logging.debug('waiting for connection...')
         while True:
@@ -86,4 +91,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

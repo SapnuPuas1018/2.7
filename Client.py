@@ -13,6 +13,7 @@ SERVER_IP = '127.0.0.1'
 SERVER_PORT = 16241
 HEADER_LEN = 2
 MAX_PACKET = 1024
+COMMAND_LIST = ['DIR', 'DELETE', 'COPY', 'EXECUTE', 'TAKE_SCREENSHOT', 'EXIT']
 
 
 def protocol(my_socket):
@@ -39,16 +40,20 @@ def main():
     try:
         my_socket.connect(('127.0.0.1', SERVER_PORT))
         logging.debug('connected')
-        request = ""
-        while request != "EXIT":
+        request = ''
+        while request != 'EXIT':
             request = input('enter your request here: ')
             my_socket.send(request.encode())
             if request == 'DIR':
-                file_name = input('enter the file name (DIR): ')
-                my_socket.send(file_name.encode())
+                folder_name = input('enter the folder path (DIR): ')
+                my_socket.sendall(folder_name.encode())
+                response = my_socket.recv(MAX_PACKET).decode()
+                print(response)
             elif request == 'DELETE':
-                file_name = input('enter the file name that you want to delete: ')
+                file_name = input('enter the file path that you want to delete:')
                 my_socket.send(file_name.encode())
+                response = my_socket.recv(MAX_PACKET)
+                print(response.decode())
             elif request == 'EXIT':
                 my_socket.send(request.encode())
                 protocol(my_socket)
