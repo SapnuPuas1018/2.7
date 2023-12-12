@@ -10,6 +10,9 @@ import os
 import shutil
 import Protocol
 import subprocess
+import pyautogui
+import base64
+
 
 logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
 
@@ -18,6 +21,7 @@ PORT = 16241
 QUEUE_LEN = 1
 MAX_PACKET = 1024
 SHORT_SIZE = 2
+FOLDER_PATH_FOR_SCREENSHOTS = r'C:\Users\nati2\OneDrive\Desktop\2.7\screen.jpg'
 
 
 def return_answer(request, client_socket):
@@ -40,19 +44,17 @@ def return_answer(request, client_socket):
             Protocol.send_(client_socket, output)
             return x
         except socket.error as err:
-            logging.debug('folder not found')
+            logging.debug('folder not found' + str(err))
     elif request == 'DELETE':
         try:
-            #file_name = client_socket.recv(MAX_PACKET).decode()
             file_name = Protocol.receive_(client_socket)
             logging.debug('file name del: ' + file_name)
             os.remove(file_name)
             print(f"{file_name} has been removed successfully")
             logging.debug("File deleted successfully.")
-            #client_socket.send(b"File deleted successfully.")
             Protocol.send_(client_socket, b"File deleted successfully.")
         except socket.error as err:
-            logging.debug('file not found')
+            logging.debug('file not found' + str(err))
     elif request == 'COPY':
         try:
             source = Protocol.receive_(client_socket)
@@ -70,6 +72,19 @@ def return_answer(request, client_socket):
             Protocol.send_(client_socket, 'executed')
         except socket.error as err:
             logging.error(f'received socket error while trying to execute {program_path}' + str(err))
+    elif request == 'TAKE_SCREENSHOT':
+        try:
+            image = pyautogui.screenshot()
+            image.save(FOLDER_PATH_FOR_SCREENSHOTS)
+            with open(FOLDER_PATH_FOR_SCREENSHOTS, 'rb') as image_file:
+                base64_bytes = base64.b64encode(image_file.read())
+                print(base64_bytes)
+
+                base64_string = base64_bytes.decode()
+                print(base64_string)
+                Protocol.send_(client_socket, base64_string)
+        except socket.error as err:
+            logging.error(f'received socket error while trying to save screenshot {image}' + str(err))
     elif request == 'EXIT':
         return 'exit'
 
@@ -85,7 +100,6 @@ def main():
             response = ''
             try:
                 while response != 'exit':
-                    #request = client_socket.recv(MAX_PACKET).decode()
                     request = Protocol.receive_(client_socket)
                     print('request: ' + request)
                     logging.debug('server received: ' + request)

@@ -7,6 +7,9 @@ import os
 import socket
 import logging
 import Protocol
+import base64
+from io import BytesIO
+from PIL import Image
 
 logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
 
@@ -32,30 +35,25 @@ def main():
                 Protocol.send_(my_socket, folder_name)
                 response = Protocol.receive_(my_socket)
                 print(response)
-
-            # if request == 'DIR':
-            #     folder_name = input('enter the folder path (DIR): ')
-            #     Protocol.send(my_socket, folder_name)
-            #     response = Protocol.receive(my_socket)
-            #     print(response)
-            # elif request == 'DELETE':
-            #     file_name = input('enter the file path that you want to delete:')
-            #     Protocol.send(my_socket, file_name)
-            #     response = Protocol.receive(my_socket)
-            #     print(response.decode())
-
             elif request == 'COPY':
                 source = input('enter the file path that you want to copy: ')
                 Protocol.send_(my_socket, source)
                 destination = input('enter the destination: ')
                 Protocol.send_(my_socket, destination)
-            # elif request == 'EXECUTE':
-            #     file_name = input('enter the file path that you want to execute:')
-            #     Protocol.send(my_socket, file_name)
-            #     response = Protocol.receive(my_socket)
-            #     print(response)
+            elif request == 'TAKE_SCREENSHOT':
+                Protocol.send_(my_socket, request)
+                response = Protocol.receive_(my_socket)
+                decoded_string = base64.b64decode(response)
+                try:
+                    image = Image.open(BytesIO(decoded_string))
+                    image.show()
+                    image.close()
+                except Exception as err:
+                    logging.error('error in TAKE_SCREENSHOT' + str(err))
             elif request == 'EXIT':
-                my_socket.send_(request.encode())
+                Protocol.send_(my_socket, request)
+                response = Protocol.receive_(my_socket)
+                print(response)
             else:
                 print('invalid')
                 logging.debug('client entered an invalid request')

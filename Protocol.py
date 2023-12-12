@@ -4,7 +4,7 @@ import socket
 logging.basicConfig(filename='my_log_protocol.log', level=logging.DEBUG)
 
 MAX_PACKET = 1024
-LENGTH_FIELD_SIZE = 4
+LENGTH_FIELD_SIZE = 10
 
 
 # def receive(my_socket):
