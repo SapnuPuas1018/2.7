@@ -29,7 +29,7 @@ def main():
     try:
         my_socket.connect(('127.0.0.1', SERVER_PORT))
         logging.debug('connected')
-        request = ['', ]
+        request = ''
         while request != 'EXIT':
             request = input('enter your request here: ')
             print(request)

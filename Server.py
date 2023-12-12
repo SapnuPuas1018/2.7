@@ -54,7 +54,7 @@ def dir_func(client_socket):
             # Send the list of files to the client
             Protocol.send_(client_socket, output)
     except socket.error as err:
-        logging.debug('folder not found' + str(err))
+        logging.error('received socket error in dir ' + str(err))
 
 
 def delete_func(client_socket):
@@ -204,7 +204,7 @@ def main():
                 client_socket.close()
                 logging.debug('user disconnected')
     except socket.error as err:
-        logging.debug('received socket error on server socket' + str(err))
+        logging.error('received socket error on server socket' + str(err))
     finally:
         my_socket.close()
 

@@ -8,7 +8,7 @@ Protocol Functions
 import logging
 import socket
 
-logging.basicConfig(filename='my_log_protocol.log', level=logging.DEBUG)
+logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
 
 MAX_PACKET = 1024
 LENGTH_FIELD_SIZE = 10
