@@ -55,7 +55,7 @@ def main():
                 response = Protocol.receive_(my_socket)
                 print(response)
             else:
-                print('invalid')
+                print('invalid command')
                 logging.debug('client entered an invalid request')
     except socket.error as err:
         logging.debug('received socket error ' + str(err))

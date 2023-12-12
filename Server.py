@@ -108,13 +108,6 @@ def take_screenshot_func(client_socket):
 
 
 def return_answer(request, client_socket):
-    """
-    :param: request
-    :type: request str
-    :return: dt_string | SERVER_NAME | random_number
-    :rtype: str | int
-    """
-
     if request == 'DIR':
         dir_func(client_socket)
     elif request == 'DELETE':
