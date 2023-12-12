@@ -47,15 +47,13 @@ def main():
                 Protocol.send_(my_socket, request)
                 response = Protocol.receive_(my_socket)
                 decoded_string = base64.b64decode(response)
-                try:
-                    image = Image.open(BytesIO(decoded_string))
-                    image.show()
-                    image.close()
-                except Exception as err:
-                    logging.error('error in TAKE_SCREENSHOT' + str(err))
+                image = Image.open(BytesIO(decoded_string))
+                image.show()
+                image.close()
             elif request == 'EXIT':
                 Protocol.send_(my_socket, request)
-                print('Goodbye')
+                response = Protocol.receive_(my_socket)
+                print(response)
             else:
                 print('invalid command')
                 logging.debug('client entered an invalid request')

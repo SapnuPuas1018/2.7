@@ -166,4 +166,5 @@ def return_answer(request, client_socket):
     elif request == 'TAKE_SCREENSHOT':
         take_screenshot_func(client_socket)
     elif request == 'EXIT' or 'Error':
+
         return 'exit'
