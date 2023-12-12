@@ -1,10 +1,3 @@
-"""
-Socket Server Functions
-
-:author: Yuval Hayun
-:date: 12/12/23
-"""
-
 import socket
 import logging
 import glob
@@ -15,46 +8,33 @@ import subprocess
 import pyautogui
 import base64
 
-logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
-
-IP = '127.0.0.1'
-PORT = 16241
-QUEUE_LEN = 1
-MAX_PACKET = 1024
-SHORT_SIZE = 2
 FOLDER_PATH_FOR_SCREENSHOTS = r'C:\Users\nati2\OneDrive\Desktop\2.7\screen.jpg'
 
 
 def dir_func(client_socket):
     """
-    Retrieves a list of files in a specified folder and sends it to the client.
+    Retrieves a list of files in the specified directory and sends it to the client.
 
-    :param client_socket: The client socket for communication.
+    :param client_socket: The client socket connected to the server.
     :type client_socket: socket.socket
 
-    :return: If the specified folder exists, a list of files in the folder is sent to the client.
-             If the folder does not exist, a warning message is sent to the client.
-    :rtype: None
+    :return: A string containing the list of files in the directory.
+    :rtype: str
     """
     try:
-        # Receive the folder name from the client
         folder_name_bytes = Protocol.receive_(client_socket)
-        logging.debug('folder_name_bytes' + folder_name_bytes)
-
-        # Check if the folder exists
+        logging.debug('received: ' + folder_name_bytes)
         if not os.path.exists(folder_name_bytes):
             logging.warning('folder do not exist: ' + folder_name_bytes)
-            Protocol.send_(client_socket, f'folder {folder_name_bytes} do not exist')
+            Protocol.send_(client_socket, 'folder do not exist: ' + folder_name_bytes)
         else:
-            # Get the list of files in the folder
-            files_list = glob.glob(rf'{folder_name_bytes}\*.*')
+            files_list = glob.glob(rf'{folder_name_bytes}*.*')
             output = f"{files_list}"
             logging.debug(f'the files: {output} are in: {folder_name_bytes}')
-
-            # Send the list of files to the client
             Protocol.send_(client_socket, output)
     except socket.error as err:
-        logging.debug('folder not found' + str(err))
+        Protocol.send_('received socket error while trying to dir: ' + folder_name_bytes)
+        logging.error('received socket error while trying to dir' + str(err))
 
 
 def delete_func(client_socket):
@@ -177,37 +157,3 @@ def return_answer(request, client_socket):
         take_screenshot_func(client_socket)
     elif request == 'EXIT' or 'Error':
         return 'exit'
-
-
-def main():
-    """
-    Initializes and manages the socket server.
-
-    :return: None
-    """
-    my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        my_socket.bind(('127.0.0.1', PORT))
-        my_socket.listen(QUEUE_LEN)
-        logging.debug('waiting for connection...')
-        while True:
-            client_socket, client_address = my_socket.accept()
-            response = ''
-            try:
-                while response != 'exit':
-                    request = Protocol.receive_(client_socket)
-                    logging.debug('server received: ' + request)
-                    response = return_answer(request, client_socket)
-            except socket.error as err:
-                logging.debug('received socket error on client socket' + str(err))
-            finally:
-                client_socket.close()
-                logging.debug('user disconnected')
-    except socket.error as err:
-        logging.debug('received socket error on server socket' + str(err))
-    finally:
-        my_socket.close()
-
-
-if __name__ == '__main__':
-    main()

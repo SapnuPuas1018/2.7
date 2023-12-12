@@ -21,6 +21,10 @@ COMMAND_SINGLE_PARAMETER_LIST = ['DIR', 'DELETE', 'EXECUTE']
 
 
 def main():
+    """
+    main function
+    :return: None
+    """
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         my_socket.connect(('127.0.0.1', SERVER_PORT))
