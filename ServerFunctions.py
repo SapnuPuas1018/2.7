@@ -8,33 +8,43 @@ import subprocess
 import pyautogui
 import base64
 
+
+logging.basicConfig(filename='my_log.log', level=logging.DEBUG)
+
+
 FOLDER_PATH_FOR_SCREENSHOTS = r'C:\Users\nati2\OneDrive\Desktop\2.7\screen.jpg'
 
 
 def dir_func(client_socket):
     """
-    Retrieves a list of files in the specified directory and sends it to the client.
+    Retrieves a list of files in a specified folder and sends it to the client.
 
-    :param client_socket: The client socket connected to the server.
+    :param client_socket: The client socket for communication.
     :type client_socket: socket.socket
 
-    :return: A string containing the list of files in the directory.
-    :rtype: str
+    :return: If the specified folder exists, a list of files in the folder is sent to the client.
+             If the folder does not exist, a warning message is sent to the client.
+    :rtype: None
     """
     try:
+        # Receive the folder name from the client
         folder_name_bytes = Protocol.receive_(client_socket)
-        logging.debug('received: ' + folder_name_bytes)
+        logging.debug('folder_name_bytes' + folder_name_bytes)
+
+        # Check if the folder exists
         if not os.path.exists(folder_name_bytes):
             logging.warning('folder do not exist: ' + folder_name_bytes)
-            Protocol.send_(client_socket, 'folder do not exist: ' + folder_name_bytes)
+            Protocol.send_(client_socket, f'folder {folder_name_bytes} do not exist')
         else:
-            files_list = glob.glob(rf'{folder_name_bytes}*.*')
+            # Get the list of files in the folder
+            files_list = glob.glob(rf'{folder_name_bytes}\*.*')
             output = f"{files_list}"
             logging.debug(f'the files: {output} are in: {folder_name_bytes}')
+
+            # Send the list of files to the client
             Protocol.send_(client_socket, output)
     except socket.error as err:
-        Protocol.send_('received socket error while trying to dir: ' + folder_name_bytes)
-        logging.error('received socket error while trying to dir' + str(err))
+        logging.error('received socket error in dir ' + str(err))
 
 
 def delete_func(client_socket):

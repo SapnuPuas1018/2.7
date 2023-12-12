@@ -3,7 +3,6 @@ author - Yuval Hayun
 date   - 23/11/23
 socket client
 """
-import os
 import socket
 import logging
 import Protocol
@@ -32,14 +31,14 @@ def main():
         request = ''
         while request != 'EXIT':
             request = input('enter your request here: ')
-            print(request)
-            Protocol.send_(my_socket, request)
             if request in COMMAND_SINGLE_PARAMETER_LIST:
+                Protocol.send_(my_socket, request)
                 folder_name = input(f'enter the file path ({request}): ')
                 Protocol.send_(my_socket, folder_name)
                 response = Protocol.receive_(my_socket)
                 print(response)
             elif request == 'COPY':
+                Protocol.send_(my_socket, request)
                 source = input('enter the file path that you want to copy: ')
                 Protocol.send_(my_socket, source)
                 destination = input('enter the destination: ')
@@ -56,13 +55,12 @@ def main():
                     logging.error('error in TAKE_SCREENSHOT' + str(err))
             elif request == 'EXIT':
                 Protocol.send_(my_socket, request)
-                response = Protocol.receive_(my_socket)
-                print(response)
+                print('Goodbye')
             else:
                 print('invalid command')
                 logging.debug('client entered an invalid request')
     except socket.error as err:
-        logging.debug('received socket error ' + str(err))
+        logging.error('received socket error ' + str(err))
     finally:
         my_socket.close()
 
