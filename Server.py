@@ -51,6 +51,7 @@ def delete_func(client_socket):
         print(f"{file_name} has been removed successfully")
         logging.debug("File deleted successfully")
         Protocol.send_(client_socket, "File deleted successfully")
+
     except OSError as err:
         Protocol.send_(client_socket, 'received os error while trying to delete: ' + file_name)
         logging.error('received os error while trying to delete' + str(err))
@@ -84,10 +85,10 @@ def execute_func(client_socket):
         Protocol.send_(client_socket, 'executed successfully')
     except OSError as err:
         logging.error(f'received os error while trying to execute {program_path}' + str(err))
-        Protocol.send_(f'received os error while trying to execute {program_path}')
+        Protocol.send_(client_socket, f'received os error while trying to execute {program_path}')
     except socket.error as err:
         logging.error(f'received socket error while trying to execute {program_path}' + str(err))
-        Protocol.send_(f'received socket error while trying to execute {program_path}')
+        Protocol.send_(client_socket, f'received socket error while trying to execute {program_path}')
 
 
 def take_screenshot_func(client_socket):
@@ -103,7 +104,7 @@ def take_screenshot_func(client_socket):
             Protocol.send_(client_socket, base64_string)
     except socket.error as err:
         logging.error('received socket error while trying to save screenshot: ' + str(err))
-        Protocol.send_('received socket error while trying to save screenshot:')
+        Protocol.send_(client_socket, 'received socket error while trying to save screenshot')
 
 
 def return_answer(request, client_socket):
@@ -113,7 +114,7 @@ def return_answer(request, client_socket):
     :return: dt_string | SERVER_NAME | random_number
     :rtype: str | int
     """
-    print('request: ' + request)
+
     if request == 'DIR':
         dir_func(client_socket)
     elif request == 'DELETE':
@@ -124,7 +125,7 @@ def return_answer(request, client_socket):
         execute_func(client_socket)
     elif request == 'TAKE_SCREENSHOT':
         take_screenshot_func(client_socket)
-    elif request == 'EXIT':
+    elif request == 'EXIT' or 'Error':
         return 'exit'
 
 
