@@ -42,7 +42,6 @@ def return_answer(request, client_socket):
             output = f"{x}"
             logging.debug("output: " + output)
             Protocol.send_(client_socket, output)
-            return x
         except socket.error as err:
             logging.debug('folder not found' + str(err))
     elif request == 'DELETE':
@@ -104,8 +103,6 @@ def main():
                     print('request: ' + request)
                     logging.debug('server received: ' + request)
                     response = return_answer(request, client_socket)
-                    response = str(response)
-                    print('response: ' + response)
             except socket.error as err:
                 logging.debug('received socket error on client socket' + str(err))
             finally:
