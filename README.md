@@ -4,6 +4,7 @@ A simple Netwrok protocol designed to invoke specific actions in the server mach
 message length + message
 
 message length: 10 Bytes (unsigned integer, network byte order)
+message: binary data relevant to the specified command.  
 
 sequence diagram (created using plantuml.com):
 
