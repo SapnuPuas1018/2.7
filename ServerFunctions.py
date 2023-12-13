@@ -65,11 +65,11 @@ def delete_func(client_socket):
         Protocol.send_(client_socket, "File deleted successfully")
 
     except OSError as err:
-        Protocol.send_(client_socket, 'received os error while trying to delete: ' + file_name)
+        Protocol.send_(client_socket, 'error while trying to delete: ' + file_name)
         logging.error('received os error while trying to delete' + str(err))
 
     except socket.error as err:
-        Protocol.send_(client_socket, 'received socket error while trying to delete: ' + file_name)
+        Protocol.send_(client_socket, 'error while trying to delete: ' + file_name)
         logging.error('received socket error while trying to delete' + str(err))
 
 
@@ -90,10 +90,10 @@ def copy_func(client_socket):
         Protocol.send_(client_socket, f"File {source} copied to {destination} successfully")
 
     except OSError as err:
-        Protocol.send_(client_socket, f'received os error while trying to copy {source} to {destination}:')
+        Protocol.send_(client_socket, f'error while trying to copy {source} to {destination}:')
         logging.error(f'received os error while trying to copy {source} to {destination}:' + str(err))
     except socket.error as err:
-        Protocol.send_(client_socket, f'received socket error while trying to copy {source} to {destination}:')
+        Protocol.send_(client_socket, f'error while trying to copy {source} to {destination}:')
         logging.error(f'received socket error while trying to copy {source} to {destination}:' + str(err))
 
 
@@ -113,10 +113,10 @@ def execute_func(client_socket):
         Protocol.send_(client_socket, 'executed successfully')
     except OSError as err:
         logging.error(f'received os error while trying to execute {program_path}' + str(err))
-        Protocol.send_(client_socket, f'received os error while trying to execute {program_path}')
+        Protocol.send_(client_socket, f'error while trying to execute {program_path}')
     except socket.error as err:
         logging.error(f'received socket error while trying to execute {program_path}' + str(err))
-        Protocol.send_(client_socket, f'received socket error while trying to execute {program_path}')
+        Protocol.send_(client_socket, f'error while trying to execute {program_path}')
 
 
 def take_screenshot_func(client_socket):
@@ -139,7 +139,15 @@ def take_screenshot_func(client_socket):
             Protocol.send_(client_socket, base64_string)
     except socket.error as err:
         logging.error('received socket error while trying to save screenshot: ' + str(err))
-        Protocol.send_(client_socket, 'received socket error while trying to save screenshot')
+        Protocol.send_(client_socket, 'error while trying to save screenshot')
+
+
+def exit_func(client_socket):
+    try:
+        Protocol.send_(client_socket, 'Goodbye')
+    except socket.error as err:
+        logging.error('received socket error while trying to exit: ' + str(err))
+        Protocol.send_(client_socket, 'error while trying exit')
 
 
 def return_answer(request, client_socket):
@@ -166,5 +174,5 @@ def return_answer(request, client_socket):
     elif request == 'TAKE_SCREENSHOT':
         take_screenshot_func(client_socket)
     elif request == 'EXIT' or 'Error':
-
+        exit_func(client_socket)
         return 'exit'
