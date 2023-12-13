@@ -41,10 +41,10 @@ def send_(my_socket, data):
     Encodes and sends a message through the given socket.
 
     :param my_socket: The socket to send the message through.
-    :type my_socket: socket. Socket
+    :type: my_socket: socket. Socket
 
     :param data: The message to be sent.
-    :type data: str
+    :type: data: str
 
     :return: None
     """

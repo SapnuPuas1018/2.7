@@ -61,6 +61,7 @@ def delete_func(client_socket):
         file_name = Protocol.receive_(client_socket)
         logging.debug('file name del: ' + file_name)
         os.remove(file_name)
+
         logging.debug("File deleted successfully")
         Protocol.send_(client_socket, "File deleted successfully")
 
