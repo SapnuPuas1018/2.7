@@ -6,3 +6,5 @@ message length + message
 message length: 10 Bytes (unsigned integer, network byte order)
 
 sequence diagram (created using plantuml.com):
+
+![image](https://github.com/SapnuPuas1018/2.7/assets/145786944/d13ed525-adcd-43b5-95a9-34558dd43698)
